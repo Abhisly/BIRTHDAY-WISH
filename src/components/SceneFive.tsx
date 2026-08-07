@@ -53,6 +53,8 @@ export default function SceneFive() {
   const [endMsg, setEndMsg] = useState(0);
   const [visiblePara, setVisiblePara] = useState(0);
 
+  const [showClose, setShowClose] = useState(false);
+
   const rootRef   = useRef<HTMLDivElement>(null);
   const envRef    = useRef<HTMLDivElement>(null);
   const letterRef = useRef<HTMLDivElement>(null);
@@ -86,22 +88,30 @@ export default function SceneFive() {
           LETTER_PARAGRAPHS.forEach((_, i) => {
             setTimeout(() => setVisiblePara(i + 1), 600 + i * 1400);
           });
-          // after all text, begin ending sequence
-          const endStart = 600 + LETTER_PARAGRAPHS.length * 1400 + 4000;
+          // show close button after all paragraphs and signature are shown
+          const revealDuration = 600 + LETTER_PARAGRAPHS.length * 1400 + 1500;
           setTimeout(() => {
-            if (letterRef.current) gsap.to(letterRef.current, { opacity: 0, y: -20, duration: 1.5, ease: "power2.inOut" });
-            setTimeout(() => {
-              setPhase("ending");
-              if (rootRef.current) rootRef.current.style.background = "#000";
-              if (rootRef.current) gsap.to(rootRef.current, { opacity: 1, duration: 0.1 });
-              setTimeout(() => setEndMsg(1), 800);
-              setTimeout(() => setEndMsg(2), 4500);
-              setTimeout(() => setEndMsg(3), 8500);
-              setTimeout(() => {
-                if (rootRef.current) gsap.to(rootRef.current, { opacity: 0, duration: 3, ease: "power2.inOut" });
-              }, 18000);
-            }, 2000);
-          }, endStart);
+            setShowClose(true);
+          }, revealDuration);
+        }
+      });
+    }
+  };
+
+  /* Close letter and begin ending sequence */
+  const closeLetter = () => {
+    if (letterRef.current) {
+      gsap.to(letterRef.current, { opacity: 0, y: -20, duration: 1.5, ease: "power2.inOut",
+        onComplete: () => {
+          setPhase("ending");
+          if (rootRef.current) rootRef.current.style.background = "#000";
+          if (rootRef.current) gsap.to(rootRef.current, { opacity: 1, duration: 0.1 });
+          setTimeout(() => setEndMsg(1), 800);
+          setTimeout(() => setEndMsg(2), 4500);
+          setTimeout(() => setEndMsg(3), 8500);
+          setTimeout(() => {
+            if (rootRef.current) gsap.to(rootRef.current, { opacity: 0, duration: 3, ease: "power2.inOut" });
+          }, 18000);
         }
       });
     }
@@ -150,23 +160,28 @@ export default function SceneFive() {
           <div
             onClick={openEnvelope}
             className="relative cursor-pointer group"
-            style={{ width: "clamp(240px,38vw,360px)", animation: "s5FloatIn 1.4s 0.5s ease forwards", opacity: 0 }}
+            style={{ width: "clamp(320px,50vw,480px)", animation: "s5FloatIn 1.4s 0.5s ease forwards", opacity: 0 }}
           >
-            {/* Soft gold glow behind */}
+            {/* Soft radial circular glow (no box container) */}
             <div
-              className="absolute inset-0 rounded-xl pointer-events-none"
+              className="absolute pointer-events-none"
               style={{
-                boxShadow: "0 0 60px 20px rgba(193,18,31,0.12), 0 0 120px 40px rgba(244,197,66,0.06)",
-                transition: "box-shadow 0.4s ease",
+                top: "50%", left: "50%",
+                transform: "translate(-50%, -50%)",
+                width: "130%", height: "130%",
+                borderRadius: "50%",
+                background: "radial-gradient(circle, rgba(193,18,31,0.2) 0%, rgba(244,197,66,0.06) 50%, transparent 70%)",
+                filter: "blur(24px)",
+                zIndex: 1,
               }}
             />
             <img
               src="/red-envelope.webp"
               alt="Birthday envelope"
               draggable={false}
-              className="w-full h-auto object-contain transition-transform duration-500 group-hover:scale-[1.03]"
+              className="w-full h-auto object-contain transition-transform duration-500 group-hover:scale-[1.04]"
               style={{
-                filter: "drop-shadow(0 12px 40px rgba(0,0,0,0.7)) drop-shadow(0 0 20px rgba(193,18,31,0.3))",
+                filter: "drop-shadow(0 14px 45px rgba(0,0,0,0.85)) drop-shadow(0 0 15px rgba(193,18,31,0.25))",
                 position: "relative", zIndex: 2,
               }}
             />
@@ -253,6 +268,44 @@ export default function SceneFive() {
                   — Abhi
                 </span>
               </div>
+
+              {/* Close Button */}
+              {showClose && (
+                <div style={{
+                  marginTop: "40px",
+                  display: "flex",
+                  justifyContent: "center",
+                  animation: "s5In 1.2s ease forwards",
+                }}>
+                  <button
+                    onClick={closeLetter}
+                    style={{
+                      fontFamily: "var(--font-inter, sans-serif)",
+                      fontWeight: 400,
+                      letterSpacing: "0.15em",
+                      fontSize: "clamp(0.72rem, 1.5vw, 0.85rem)",
+                      textTransform: "uppercase",
+                      color: "rgba(80,35,10,0.85)",
+                      border: "1px solid rgba(80,35,10,0.22)",
+                      padding: "8px 24px",
+                      borderRadius: "2px",
+                      cursor: "pointer",
+                      background: "transparent",
+                      transition: "all 0.3s ease",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = "rgba(80,35,10,0.06)";
+                      e.currentTarget.style.borderColor = "rgba(80,35,10,0.55)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = "transparent";
+                      e.currentTarget.style.borderColor = "rgba(80,35,10,0.22)";
+                    }}
+                  >
+                    Close Letter
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>

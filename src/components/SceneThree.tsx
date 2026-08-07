@@ -599,9 +599,9 @@ export default function SceneThree({ onComplete }: SceneThreeProps) {
         </div>
       </div>
 
-      {/* Desktop-only balloon floaters — left and right sides (starts after countdown) */}
+      {/* Balloon floaters — left and right sides (starts after countdown, now visible on mobile) */}
       {showBalloons && (
-        <div className="hidden md:block">
+        <div className="block">
           {([
             { left:"3%",  dur:"10s", delay:"-2s",  size:68 },
             { left:"9%",  dur:"13s", delay:"-7s",  size:54 },
@@ -620,7 +620,7 @@ export default function SceneThree({ onComplete }: SceneThreeProps) {
                 position: "fixed",
                 left: b.left,
                 bottom: "-130px",
-                width: `${b.size}px`,
+                width: `clamp(35px, 9vw, ${b.size}px)`,
                 height: "auto",
                 animation: `balloonRise ${b.dur} ${b.delay} linear infinite`,
                 pointerEvents: "none",
