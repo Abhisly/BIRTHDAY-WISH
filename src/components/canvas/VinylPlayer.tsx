@@ -5,11 +5,12 @@ import Image from "next/image";
 
 interface VinylPlayerProps {
   isPlaying: boolean;
+  isTransitioning?: boolean;
 }
 
-export default function VinylPlayer({ isPlaying }: VinylPlayerProps) {
+export default function VinylPlayer({ isPlaying, isTransitioning = false }: VinylPlayerProps) {
   return (
-    <div className="relative w-64 h-64 md:w-[380px] md:h-[380px] flex items-center justify-center select-none group">
+    <div className="relative w-[210px] h-[210px] sm:w-64 sm:h-64 md:w-[380px] md:h-[380px] flex items-center justify-center select-none group">
       {/* Glossy 3D Reflection overlay/lighting glow */}
       <div 
         className="absolute inset-0 rounded-full bg-gradient-to-tr from-black/50 via-transparent to-white/15 pointer-events-none z-10 mix-blend-overlay" 
@@ -25,7 +26,11 @@ export default function VinylPlayer({ isPlaying }: VinylPlayerProps) {
       {/* Rotating Vinyl Record Disk - Masked into a perfect circle */}
       <div 
         className={`w-full h-full rounded-full overflow-hidden border border-white/10 shadow-[0_0_60px_rgba(0,0,0,0.85)] relative transform-gpu transition-all duration-1000 vinyl-disk ${
-          isPlaying ? "animate-spin-slow-active" : "animate-spin-slow"
+          isTransitioning
+            ? "animate-spin-warp"
+            : isPlaying 
+            ? "animate-spin-slow-active" 
+            : "animate-spin-slow"
         }`}
         style={{
           boxShadow: isPlaying 
@@ -43,17 +48,18 @@ export default function VinylPlayer({ isPlaying }: VinylPlayerProps) {
           priority
         />
 
-        {/* Center ruby glow overlay that expands and grows brighter during transition */}
-        <div
-          className="absolute inset-0 m-auto w-32 h-32 rounded-full bg-gradient-to-br from-[#FF4D6D] to-[#C1121F] opacity-0 blur-md pointer-events-none mix-blend-screen vinyl-center-glow"
-          style={{
-            boxShadow: "0 0 40px 15px rgba(255, 77, 109, 0.8)",
-          }}
-        />
-
         {/* Vinyl sheen reflection tracks */}
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_38%,rgba(255,255,255,0.06)_48%,transparent_58%)] pointer-events-none mix-blend-overlay" />
       </div>
+
+      {/* Center ruby glow overlay that expands and grows brighter during transition — outside the overflow-hidden boundary */}
+      <div
+        className="absolute inset-0 m-auto w-32 h-32 rounded-full bg-gradient-to-br from-[#FF4D6D] to-[#C1121F] opacity-0 blur-md pointer-events-none mix-blend-screen vinyl-center-glow"
+        style={{
+          boxShadow: "0 0 40px 15px rgba(255, 77, 109, 0.8)",
+          zIndex: 15,
+        }}
+      />
 
       {/* Spindle center pin hole to add realistic depth and finish */}
       <div className="absolute w-5 h-5 rounded-full bg-[#151515] border border-zinc-700 shadow-[inset_0_2px_4px_rgba(0,0,0,0.9)] z-20 flex items-center justify-center">
@@ -66,6 +72,9 @@ export default function VinylPlayer({ isPlaying }: VinylPlayerProps) {
         }
         :global(.animate-spin-slow-active) {
           animation: spin-anim 2.8s linear infinite;
+        }
+        :global(.animate-spin-warp) {
+          animation: spin-anim 0.45s linear infinite;
         }
         @keyframes spin-anim {
           from { transform: rotate(0deg); }

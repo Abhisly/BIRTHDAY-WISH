@@ -29,7 +29,6 @@ export function unlockAudioContext() {
   }
 }
 
-// Procedural double thump heartbeat synth
 export function playHeartbeatSound() {
   const ctx = getAudioContext();
   if (!ctx) return;
@@ -49,16 +48,16 @@ export function playHeartbeatSound() {
 
       osc.type = "sine";
       osc.frequency.setValueAtTime(100, time);
-      osc.frequency.exponentialRampToValueAtTime(40, time + 0.25);
+      osc.frequency.exponentialRampToValueAtTime(45, time + 0.25);
 
       oscMobile.type = "triangle";
-      oscMobile.frequency.setValueAtTime(250, time);
-      oscMobile.frequency.exponentialRampToValueAtTime(80, time + 0.25);
+      oscMobile.frequency.setValueAtTime(280, time);
+      oscMobile.frequency.exponentialRampToValueAtTime(90, time + 0.25);
 
       filter.type = "lowpass";
-      filter.frequency.setValueAtTime(250, time);
+      filter.frequency.setValueAtTime(450, time); // Allow mids/harmonics for mobile speakers
 
-      gain.gain.setValueAtTime(vol, time);
+      gain.gain.setValueAtTime(vol * 1.35, time); // Boosted volume
       gain.gain.exponentialRampToValueAtTime(0.001, time + 0.25);
 
       osc.connect(filter);
@@ -91,8 +90,9 @@ export function playCountdownBeep(freq = 440) {
 
     osc.type = "sine";
     osc.frequency.setValueAtTime(freq, now);
+    osc.frequency.exponentialRampToValueAtTime(freq * 0.6, now + 0.25);
 
-    gain.gain.setValueAtTime(0.15, now);
+    gain.gain.setValueAtTime(0.65, now); // Boosted volume
     gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
 
     osc.connect(gain);
@@ -128,21 +128,21 @@ class SoundManager {
         src: [this.cdUrl, this.cdUrlAlt],
         html5: false,
         loop: true,
-        volume: 0.85,
+        volume: 1.0,
         preload: true,
       });
       this.birthdayMusic = new Howl({
         src: [this.birthdayUrl, this.birthdayUrlAlt],
         html5: false,
         loop: true,
-        volume: 0.85,
+        volume: 1.0,
         preload: true,
       });
       this.memorySkyPiano = new Howl({
         src: [this.pianoUrl],
         html5: true,
         loop: true,
-        volume: 0.65,
+        volume: 1.0,
         preload: true,
       });
     } catch (e) {
@@ -171,10 +171,10 @@ class SoundManager {
           // Trigger fallback standard HTML5 Audio
           this.triggerFallback(this.cdUrl);
         } else {
-          this.cdMusic.fade(0, 0.85, 800, id);
+          this.cdMusic.fade(0, 1.0, 800, id);
         }
       } else {
-        this.cdMusic.volume(0.85);
+        this.cdMusic.volume(1.0);
       }
     } else {
       this.triggerFallback(this.cdUrl);
@@ -186,12 +186,12 @@ class SoundManager {
     try {
       this.fallbackAudio = new Audio(url);
       this.fallbackAudio.loop = true;
-      this.fallbackAudio.volume = 0.85;
+      this.fallbackAudio.volume = 1.0;
       this.fallbackAudio.play().catch(() => {
         // Retry with encoded path if unencoded failed
         const alt = new Audio(encodeURI(url));
         alt.loop = true;
-        alt.volume = 0.85;
+        alt.volume = 1.0;
         alt.play().catch(() => {});
         this.fallbackAudio = alt;
       });
@@ -225,10 +225,10 @@ class SoundManager {
       if (id === undefined || id === null) {
         this.triggerFallback(this.birthdayUrl);
       } else {
-        this.birthdayMusic.fade(0, 0.85, 1200, id);
+        this.birthdayMusic.fade(0, 1.0, 1200, id);
       }
     } else {
-      this.birthdayMusic.volume(0.85);
+      this.birthdayMusic.volume(1.0);
     }
   }
 
@@ -266,7 +266,7 @@ class SoundManager {
     if (!this.memorySkyPiano) return;
     if (!this.memorySkyPiano.playing()) {
       this.memorySkyPiano.play();
-      this.memorySkyPiano.fade(0, 0.65, 2500);
+      this.memorySkyPiano.fade(0, 1.0, 2500);
     }
   }
 
@@ -282,78 +282,13 @@ class SoundManager {
 export const musicManager = new SoundManager();
 
 // Procedural wind sound synthesis
-let windLfo: OscillatorNode | null = null;
-let windNoise: AudioBufferSourceNode | null = null;
-let windFilter: BiquadFilterNode | null = null;
-let windGain: GainNode | null = null;
 
 export function startWindSound() {
-  const ctx = getAudioContext();
-  if (!ctx) return;
-  try {
-    const now = ctx.currentTime;
-    
-    const bufferSize = ctx.sampleRate * 2.0; 
-    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-    const data = buffer.getChannelData(0);
-    for (let i = 0; i < bufferSize; i++) {
-      data[i] = Math.random() * 2 - 1;
-    }
-    
-    windNoise = ctx.createBufferSource();
-    windNoise.buffer = buffer;
-    windNoise.loop = true;
-
-    windFilter = ctx.createBiquadFilter();
-    windFilter.type = "bandpass";
-    windFilter.frequency.setValueAtTime(300, now);
-    windFilter.Q.setValueAtTime(3.0, now);
-
-    windLfo = ctx.createOscillator();
-    windLfo.type = "sine";
-    windLfo.frequency.setValueAtTime(0.15, now);
-
-    const lfoGain = ctx.createGain();
-    lfoGain.gain.setValueAtTime(150, now);
-    windLfo.connect(lfoGain);
-    lfoGain.connect(windFilter.frequency);
-
-    windGain = ctx.createGain();
-    windGain.gain.setValueAtTime(0, now);
-    windGain.gain.linearRampToValueAtTime(0.08, now + 3);
-
-    windNoise.connect(windFilter);
-    windFilter.connect(windGain);
-    windGain.connect(ctx.destination);
-
-    windNoise.start(now);
-    windLfo.start(now);
-  } catch (e) {
-    console.warn("Error starting wind sound:", e);
-  }
+  // Disposed to remove static wind background noise on request
 }
 
 export function stopWindSound() {
-  const ctx = getAudioContext();
-  if (!ctx || !windGain) return;
-  try {
-    const now = ctx.currentTime;
-    windGain.gain.linearRampToValueAtTime(0, now + 1.5);
-    setTimeout(() => {
-      try {
-        windNoise?.stop();
-        windLfo?.stop();
-        windNoise?.disconnect();
-        windLfo?.disconnect();
-        windFilter?.disconnect();
-        windGain?.disconnect();
-      } catch {}
-      windNoise = null;
-      windLfo = null;
-      windFilter = null;
-      windGain = null;
-    }, 1600);
-  } catch {}
+  // Disposed to remove static wind background noise on request
 }
 
 export function playWhooshSound() {
@@ -374,8 +309,8 @@ export function playWhooshSound() {
     filter.frequency.setValueAtTime(400, now);
     filter.frequency.exponentialRampToValueAtTime(1200, now + 0.3);
 
-    gain.gain.setValueAtTime(0.01, now);
-    gain.gain.linearRampToValueAtTime(0.12, now + 0.15);
+    gain.gain.setValueAtTime(0.08, now); // Boosted
+    gain.gain.linearRampToValueAtTime(0.55, now + 0.15); // Boosted
     gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
 
     osc.connect(filter);
@@ -399,7 +334,7 @@ export function playSparkleSound() {
       osc.type = "sine";
       osc.frequency.setValueAtTime(freq, now + idx * 0.05);
 
-      gain.gain.setValueAtTime(0.06, now + idx * 0.05);
+      gain.gain.setValueAtTime(0.28, now + idx * 0.05); // Boosted
       gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.05 + 0.2);
 
       osc.connect(gain);
@@ -417,19 +352,47 @@ export function playTypewriterSound() {
   try {
     if (ctx.state === "suspended") ctx.resume().catch(() => {});
     const now = ctx.currentTime;
+
+    // 1. Noise component for the mechanical click/impact
+    const bufferSize = ctx.sampleRate * 0.04; // 40ms buffer
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = Math.random() * 2 - 1;
+    }
+    const noise = ctx.createBufferSource();
+    noise.buffer = buffer;
+
+    const noiseFilter = ctx.createBiquadFilter();
+    noiseFilter.type = "bandpass";
+    noiseFilter.frequency.setValueAtTime(1000 + Math.random() * 600, now);
+    noiseFilter.Q.setValueAtTime(6, now);
+
+    const noiseGain = ctx.createGain();
+    noiseGain.gain.setValueAtTime(0.25, now); // Auditable click volume
+    noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
+
+    noise.connect(noiseFilter);
+    noiseFilter.connect(noiseGain);
+    noiseGain.connect(ctx.destination);
+
+    // 2. High-frequency click ping to simulate contact resonance
     const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
+    const oscGain = ctx.createGain();
+    
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(1400 + Math.random() * 300, now);
+    
+    oscGain.gain.setValueAtTime(0.12, now); // Crisp resonance ping
+    oscGain.gain.exponentialRampToValueAtTime(0.001, now + 0.02);
 
-    osc.type = "triangle";
-    osc.frequency.setValueAtTime(600 + Math.random() * 200, now);
+    osc.connect(oscGain);
+    oscGain.connect(ctx.destination);
 
-    gain.gain.setValueAtTime(0.03, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
-
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-
+    noise.start(now);
     osc.start(now);
+
+    noise.stop(now + 0.04);
     osc.stop(now + 0.04);
   } catch {}
 }
@@ -446,7 +409,7 @@ export function playChimeSound() {
     osc.type = "sine";
     osc.frequency.setValueAtTime(880, now);
 
-    gain.gain.setValueAtTime(0.1, now);
+    gain.gain.setValueAtTime(0.35, now); // Boosted
     gain.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
 
     osc.connect(gain);

@@ -3,29 +3,10 @@
 
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import gsap from "gsap";
-import { musicManager } from "@/lib/audio";
+import { musicManager, playCountdownBeep } from "@/lib/audio";
 
 interface SceneThreeProps {
   onComplete?: () => void;
-}
-
-/* ─── Procedural countdown beep ─── */
-function playCountdownBeep(pitch = 220) {
-  try {
-    const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-    const ctx = new AudioCtx();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = "sine";
-    osc.frequency.setValueAtTime(pitch, ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(pitch * 0.6, ctx.currentTime + 0.35);
-    gain.gain.setValueAtTime(0.7, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.45);
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.start();
-    osc.stop(ctx.currentTime + 0.5);
-  } catch { /* silent fail */ }
 }
 
 /* No reveal chime — music starts instead */
@@ -406,8 +387,7 @@ export default function SceneThree({ onComplete }: SceneThreeProps) {
       {/* ── CAKE TEASER STAGE ── */}
       <div
         ref={cakeRef}
-        className="absolute bottom-0 translate-y-full w-full flex flex-col items-center pointer-events-none z-30"
-        style={{paddingBottom:"14vh"}}
+        className="absolute bottom-0 translate-y-full w-full flex flex-col items-center pointer-events-none z-30 pb-[6vh] md:pb-[14vh]"
       >
         {/* Under-glow */}
         <div className="absolute w-[500px] h-[200px] rounded-full bg-[#F4C542]/12 blur-[80px] bottom-0 left-1/2 -translate-x-1/2" />
@@ -425,7 +405,7 @@ export default function SceneThree({ onComplete }: SceneThreeProps) {
           <div
             className="text-center uppercase text-[#ffffff]/70 font-light"
             style={{
-              fontSize: "clamp(1.1rem,2.8vw,2rem)",
+              fontSize: "clamp(0.95rem,2.8vw,2rem)",
               letterSpacing: "0.5em",
               fontFamily: "var(--font-geist-sans, sans-serif)",
               textShadow: "0 0 20px rgba(255,255,255,0.12)",
@@ -439,7 +419,7 @@ export default function SceneThree({ onComplete }: SceneThreeProps) {
             className="text-center mt-2"
             style={{
               fontFamily: "var(--font-bodoni-moda, 'Georgia', serif)",
-              fontSize: "clamp(4.5rem,11vw,8rem)",
+              fontSize: "clamp(3.2rem,11vw,8rem)",
               fontWeight: 400,
               fontStyle: "italic",
               letterSpacing: "0.08em",
@@ -469,7 +449,7 @@ export default function SceneThree({ onComplete }: SceneThreeProps) {
         </div>
 
         {/* Luxury multi-tier SVG cake */}
-        <svg viewBox="0 0 400 320" className="w-[280px] h-auto md:w-[380px] drop-shadow-[0_20px_40px_rgba(0,0,0,0.9)] relative z-10">
+        <svg viewBox="0 0 400 320" className="w-[220px] sm:w-[280px] h-auto md:w-[380px] drop-shadow-[0_20px_40px_rgba(0,0,0,0.9)] relative z-10">
           <defs>
             {/* Cake dark body gradient */}
             <linearGradient id="bodyGrad" x1="0" y1="0" x2="0" y2="1">
@@ -616,6 +596,7 @@ export default function SceneThree({ onComplete }: SceneThreeProps) {
               key={i}
               src="/balloon.png"
               alt=""
+              className={`balloon-${i}`}
               style={{
                 position: "fixed",
                 left: b.left,
@@ -644,6 +625,16 @@ export default function SceneThree({ onComplete }: SceneThreeProps) {
           50%  { transform: translateY(-55vh)  rotate(-2deg); opacity: 0.85; }
           92%  { transform: translateY(-102vh) rotate(2deg);  opacity: 0.4;  }
           100% { transform: translateY(-115vh) rotate(0deg);  opacity: 0;    }
+        }
+        @media (max-width: 640px) {
+          :global(.balloon-0) { left: 1.5% !important; }
+          :global(.balloon-1) { left: 4% !important; }
+          :global(.balloon-2) { left: 7% !important; }
+          :global(.balloon-3) { left: 2% !important; }
+          :global(.balloon-4) { left: 91.5% !important; }
+          :global(.balloon-5) { left: 94% !important; }
+          :global(.balloon-6) { left: 88% !important; }
+          :global(.balloon-7) { left: 96% !important; }
         }
       `}</style>
     </div>

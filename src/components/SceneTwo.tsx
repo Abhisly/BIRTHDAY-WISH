@@ -273,7 +273,7 @@ export default function SceneTwo({ onComplete, setParticleMode }: SceneTwoProps)
   return (
     <div
       ref={containerRef}
-      className="w-full h-full min-h-screen flex flex-col items-center justify-between bg-black text-[#FAFAFA] relative overflow-hidden py-12 px-6"
+      className="w-full h-full min-h-screen flex flex-col items-center justify-between bg-black text-[#FAFAFA] relative overflow-hidden py-6 md:py-12 px-6"
     >
       {/* Local Orbit Transition Canvas */}
       <canvas
@@ -293,20 +293,20 @@ export default function SceneTwo({ onComplete, setParticleMode }: SceneTwoProps)
         ref={playerWrapperRef}
         className="w-full max-w-2xl flex-1 flex items-center justify-center transform-gpu"
       >
-        <VinylPlayer isPlaying={isPlaying} />
+        <VinylPlayer isPlaying={isPlaying} isTransitioning={isTransitioning} />
       </div>
 
       {/* Controls & Narrative Text */}
       <div
         ref={textGroupRef}
-        className="w-full max-w-lg flex flex-col items-center text-center justify-center min-h-[160px] z-20 select-none"
+        className="w-full max-w-lg flex flex-col items-center text-center justify-center min-h-[130px] md:min-h-[160px] z-20 select-none"
       >
         {stage === 0 && (
           <>
             <h2 className="font-serif text-2xl md:text-3.5xl font-light italic text-[#FAFAFA] mb-2">
               This surprise is better with music.
             </h2>
-            <p className="font-sans text-xs md:text-sm tracking-[0.25em] text-[rgba(250,250,250,0.5)] uppercase font-light mb-8">
+            <p className="font-sans text-xs md:text-sm tracking-[0.25em] text-[rgba(250,250,250,0.5)] uppercase font-light mb-4 md:mb-8">
               Please press Play.
             </p>
             <AnimatedButton
@@ -337,7 +337,7 @@ export default function SceneTwo({ onComplete, setParticleMode }: SceneTwoProps)
 
         {stage === 2 && (
           <div className="flex flex-col items-center">
-            <h2 className="font-serif text-2xl md:text-3.5xl font-light italic text-[#FAFAFA] mb-6">
+            <h2 className="font-serif text-2xl md:text-3.5xl font-light italic text-[#FAFAFA] mb-4 md:mb-6">
               Let&apos;s begin.
             </h2>
             <AnimatedButton
