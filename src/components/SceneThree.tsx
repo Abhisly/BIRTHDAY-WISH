@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable @next/next/no-img-element */
 
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import gsap from "gsap";
@@ -311,7 +312,7 @@ export default function SceneThree({ onComplete }: SceneThreeProps) {
         micStreamRef.current.getTracks().forEach(t => t.stop());
       }
     };
-  }, [isListeningForBlow, candlesBlown]);
+  }, [isListeningForBlow, candlesBlown, triggerBlow]);
 
   /* ── Number style ── */
   const numCls = "absolute inset-0 flex items-center justify-center font-sans font-black select-none pointer-events-none opacity-0";

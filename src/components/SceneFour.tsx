@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable @next/next/no-img-element */
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import gsap from "gsap";
 import { musicManager, startWindSound, stopWindSound } from "@/lib/audio";
