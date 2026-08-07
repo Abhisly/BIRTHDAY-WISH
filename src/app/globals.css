@@ -1,0 +1,141 @@
+@import "tailwindcss";
+
+@theme {
+  /* Color Palette overrides/additions */
+  --color-background: #050505;
+  --color-foreground: #FAFAFA;
+  
+  --color-luxury-bg: #050505;
+  --color-luxury-card: #171717;
+  --color-cherry: #C1121F;
+  --color-gold: #F4C542;
+  --color-ivory: #FAFAFA;
+  --color-rose: #FF4D6D;
+
+  /* Typography mapping */
+  --font-serif: var(--font-bodoni-moda);
+  --font-sans: var(--font-inter);
+  --font-signature: var(--font-caveat);
+
+  /* Custom Transitions & Easing (Luxury feel) */
+  --transition-cinematic: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-smooth: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+  
+  /* Ambient glow shadows */
+  --shadow-cherry-glow: 0 0 40px rgba(193, 18, 31, 0.15);
+  --shadow-gold-glow: 0 0 40px rgba(244, 197, 66, 0.15);
+  --shadow-rose-glow: 0 0 40px rgba(255, 77, 109, 0.2);
+}
+
+/* Custom Base Styles */
+:root {
+  background-color: #050505;
+  color: #FAFAFA;
+  scroll-behavior: auto;
+}
+
+body {
+  background-color: #050505;
+  color: #FAFAFA;
+  font-family: var(--font-inter), sans-serif;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom Minimalist Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #050505;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1f1f1f;
+  border-radius: 3px;
+  transition: background 0.3s;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #C1121F;
+}
+
+/* Lenis Smooth Scroll Core requirements */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  scroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}
+
+/* Premium Visual Utilities */
+@utility glassmorphism {
+  background: rgba(23, 23, 23, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(250, 250, 250, 0.05);
+}
+
+@utility glassmorphism-light {
+  background: rgba(250, 250, 250, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(250, 250, 250, 0.03);
+}
+
+@utility border-glow-gold {
+  border: 1px solid rgba(244, 197, 66, 0.2);
+  box-shadow: 0 0 20px rgba(244, 197, 66, 0.05);
+}
+
+@utility border-glow-cherry {
+  border: 1px solid rgba(193, 18, 31, 0.2);
+  box-shadow: 0 0 20px rgba(193, 18, 31, 0.05);
+}
+
+@utility border-glow-rose {
+  border: 1px solid rgba(255, 77, 109, 0.25);
+  box-shadow: 0 0 20px rgba(255, 77, 109, 0.05);
+}
+
+/* Text reveal mask classes */
+@utility text-reveal-mask {
+  mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+}
+
+/* Premium Gradients */
+@utility bg-gradient-luxury-dark {
+  background: linear-gradient(180deg, #050505 0%, #121212 100%);
+}
+
+@utility bg-gradient-radial-cherry {
+  background: radial-gradient(circle at 50% 50%, rgba(193, 18, 31, 0.15) 0%, transparent 70%);
+}
+
+@utility bg-gradient-radial-gold {
+  background: radial-gradient(circle at 50% 50%, rgba(244, 197, 66, 0.1) 0%, transparent 75%);
+}
+
+/* GSAP visual preparation (prevents FOUC - Flash of Unstyled Content) */
+.gsap-reveal {
+  opacity: 0;
+  visibility: hidden;
+}
