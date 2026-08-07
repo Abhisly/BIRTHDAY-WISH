@@ -299,7 +299,7 @@ export default function SceneThree({ onComplete }: SceneThreeProps) {
   const numCls = "absolute inset-0 flex items-center justify-center font-sans font-black select-none pointer-events-none opacity-0";
 
   return (
-    <div ref={containerRef} className="w-full min-h-screen bg-[#030303] text-white relative overflow-hidden flex items-center justify-center select-none">
+    <div ref={containerRef} className="w-full min-h-dvh bg-[#030303] text-white relative overflow-hidden flex items-center justify-center select-none">
 
       {/* Vignette */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_25%,#000_90%)] pointer-events-none z-10" />

@@ -279,7 +279,7 @@ export default function SceneOne({ onComplete, setParticleMode }: SceneOneProps)
   return (
     <div
       ref={screenWrapperRef}
-      className="w-full h-full min-h-screen flex flex-col items-center justify-center bg-black overflow-hidden relative"
+      className="w-full h-full min-h-dvh flex flex-col items-center justify-center bg-black overflow-hidden relative"
     >
       {/* Visual Ambient Lighting (Spotlight/Vignette) */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(193,18,31,0.07)_0%,transparent_65%)] pointer-events-none" />

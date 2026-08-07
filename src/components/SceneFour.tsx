@@ -233,7 +233,7 @@ export default function SceneFour({ onComplete }: { onComplete?: () => void }) {
   const isFading  = revealPhase==="dissolving";
 
   return (
-    <div data-scene4-root className="absolute inset-0 w-full h-full min-h-screen bg-black text-white overflow-hidden flex items-center justify-center select-none" style={{animation:"fadeIn 3s ease-out forwards"}}>
+    <div data-scene4-root className="absolute inset-0 w-full h-full min-h-dvh bg-black text-white overflow-hidden flex items-center justify-center select-none" style={{animation:"fadeIn 3s ease-out forwards"}}>
 
       {/* Floating Fireflies Canvas */}
       {showFireflies && (
@@ -283,8 +283,12 @@ export default function SceneFour({ onComplete }: { onComplete?: () => void }) {
             }}>
               {/* Blur overlay for background elements when zoomed */}
               <div 
-                className={`absolute inset-0 pointer-events-none transition-all duration-1000 ${isZoomed ? "opacity-100" : "opacity-0"}`}
+                className={`absolute pointer-events-none transition-all duration-1000 ${isZoomed ? "opacity-100" : "opacity-0"}`}
                 style={{
+                  width: "300vw",
+                  height: "300vh",
+                  left: "-100vw",
+                  top: "-100vh",
                   backdropFilter: "blur(5px)",
                   backgroundColor: "rgba(0,0,0,0.45)",
                   zIndex: 5 

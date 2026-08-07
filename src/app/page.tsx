@@ -14,7 +14,7 @@ export default function Home() {
   const [particleMode, setParticleMode] = useState<"normal" | "dissolve" | "explode">("normal");
 
   return (
-    <main className="relative w-full h-full min-h-screen bg-[#050505] overflow-hidden select-none">
+    <main className="relative w-full h-full min-h-dvh bg-[#050505] overflow-hidden select-none">
       {/* 1. Interactive Background Particles */}
       <BackgroundParticles
         mode={particleMode}
@@ -30,7 +30,7 @@ export default function Home() {
       <CursorGlow />
 
       {/* 4. Scene Mount Controller */}
-      <div className="relative w-full h-full min-h-screen z-20">
+      <div className="relative w-full h-full min-h-dvh z-20">
         {scene === 1 && (
           <SceneOne
             setParticleMode={setParticleMode}

@@ -273,7 +273,7 @@ export default function SceneTwo({ onComplete, setParticleMode }: SceneTwoProps)
   return (
     <div
       ref={containerRef}
-      className="w-full h-full min-h-screen flex flex-col items-center justify-between bg-black text-[#FAFAFA] relative overflow-hidden py-6 md:py-12 px-6"
+      className="w-full h-full min-h-dvh flex flex-col items-center justify-between bg-black text-[#FAFAFA] relative overflow-hidden pt-4 pb-8 md:py-12 px-6"
     >
       {/* Local Orbit Transition Canvas */}
       <canvas
@@ -313,6 +313,7 @@ export default function SceneTwo({ onComplete, setParticleMode }: SceneTwoProps)
               variant={isLoading ? "glass" : "gold"}
               hoverType={isLoading ? undefined : "play"}
               onClick={isLoading ? undefined : handlePlayMusic}
+              disabled={isLoading}
             >
               {isLoading ? (
                 <span className="flex items-center justify-center gap-3">
@@ -344,6 +345,7 @@ export default function SceneTwo({ onComplete, setParticleMode }: SceneTwoProps)
               variant="cherry"
               hoverType="continue"
               onClick={isTransitioning ? undefined : handleFinalContinue}
+              disabled={isTransitioning}
             >
               Continue →
             </AnimatedButton>

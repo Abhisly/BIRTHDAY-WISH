@@ -36,7 +36,20 @@ export default function AnimatedButton({
     const button = buttonRef.current;
     if (!container || !button) return;
 
+    if (props.disabled) {
+      gsap.to(button, {
+        x: 0,
+        y: 0,
+        scale: 1,
+        boxShadow: "0 0 0px rgba(0, 0, 0, 0)",
+        duration: 0.4,
+        ease: "power2.out",
+      });
+      return;
+    }
+
     const handleMouseMove = (e: MouseEvent) => {
+      if (button.disabled) return;
       const rect = container.getBoundingClientRect();
       const width = rect.width;
       const height = rect.height;
@@ -60,7 +73,6 @@ export default function AnimatedButton({
       });
 
       // Animate shadow glow intensity based on closeness to center
-      // Animate shadow glow intensity based on closeness to center
       if (variant === "cherry" || variant === "gold") {
         gsap.to(button, { boxShadow: "0 0 25px rgba(193, 18, 31, 0.45)" });
       } else {
@@ -69,6 +81,7 @@ export default function AnimatedButton({
     };
 
     const handleMouseLeave = () => {
+      if (button.disabled) return;
       // Return button back to center
       gsap.to(button, {
         x: 0,
@@ -87,7 +100,7 @@ export default function AnimatedButton({
       container.removeEventListener("mousemove", handleMouseMove);
       container.removeEventListener("mouseleave", handleMouseLeave);
     };
-  }, [variant]);
+  }, [variant, props.disabled]);
 
   // Click Ripple Handler
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
