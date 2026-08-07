@@ -2,6 +2,12 @@
 /* eslint-disable @next/next/no-img-element */
 import React, { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
+import { musicManager } from "@/lib/audio";
+
+interface SceneFiveProps {
+  onEndingStart?: () => void;
+  onReset?: () => void;
+}
 
 type Phase = "envelope" | "letter" | "ending";
 
@@ -48,7 +54,7 @@ function Dust() {
 }
 
 /* ── Main ─────────────────────────────────────────────────────────────────── */
-export default function SceneFive() {
+export default function SceneFive({ onEndingStart, onReset }: SceneFiveProps) {
   const [phase, setPhase] = useState<Phase>("envelope");
   const [endMsg, setEndMsg] = useState(0);
   const [visiblePara, setVisiblePara] = useState(0);
@@ -100,6 +106,7 @@ export default function SceneFive() {
 
   /* Close letter and begin ending sequence */
   const closeLetter = () => {
+    onEndingStart?.();
     if (letterRef.current) {
       gsap.to(letterRef.current, { opacity: 0, y: -20, duration: 1.5, ease: "power2.inOut",
         onComplete: () => {
@@ -110,8 +117,8 @@ export default function SceneFive() {
           setTimeout(() => setEndMsg(2), 4500);
           setTimeout(() => setEndMsg(3), 8500);
           setTimeout(() => {
-            if (rootRef.current) gsap.to(rootRef.current, { opacity: 0, duration: 3, ease: "power2.inOut" });
-          }, 18000);
+            setEndMsg(4);
+          }, 15000);
         }
       });
     }
@@ -314,41 +321,57 @@ export default function SceneFive() {
       {/* ── Ending Phase ───────────────────────────────────────────────── */}
       {isEnding && (
         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none" style={{ zIndex: 50 }}>
-          <div style={{
-            fontFamily: "var(--font-inter,sans-serif)",
-            fontWeight: 300, letterSpacing: "0.2em",
-            fontSize: "clamp(0.72rem,1.6vw,0.95rem)",
-            color: "rgba(255,255,255,0.48)",
-            textTransform: "uppercase",
-            opacity: endMsg >= 1 ? 1 : 0,
-            transition: "opacity 2.2s ease",
-            marginBottom: "22px",
-          }}>
-            Thank you.
-          </div>
-          <div style={{
-            fontFamily: "var(--font-bodoni-moda,'Georgia',serif)",
-            fontStyle: "italic", fontWeight: 300,
-            fontSize: "clamp(1.6rem,5vw,2.8rem)",
-            color: "rgba(244,197,66,0.86)",
-            letterSpacing: "0.06em",
-            opacity: endMsg >= 2 ? 1 : 0,
-            transition: "opacity 2.5s ease",
-            marginBottom: "26px",
-          }}>
-            Happy Birthday, Kavya.
-          </div>
-          <div style={{
-            fontFamily: "var(--font-bodoni-moda,'Georgia',serif)",
-            fontStyle: "italic", fontWeight: 300,
-            fontSize: "clamp(0.82rem,1.8vw,1.05rem)",
-            color: "rgba(255,255,255,0.3)",
-            letterSpacing: "0.05em",
-            opacity: endMsg >= 3 ? 1 : 0,
-            transition: "opacity 2s ease",
-          }}>
-            Some memories never really leave us.
-          </div>
+          {endMsg < 4 ? (
+            <>
+              <div style={{
+                fontFamily: "var(--font-inter,sans-serif)",
+                fontWeight: 300, letterSpacing: "0.2em",
+                fontSize: "clamp(0.72rem,1.6vw,0.95rem)",
+                color: "rgba(255,255,255,0.48)",
+                textTransform: "uppercase",
+                opacity: (endMsg >= 1 && endMsg < 4) ? 1 : 0,
+                transition: "opacity 2.2s ease",
+                marginBottom: "22px",
+              }}>
+                Thank you.
+              </div>
+              <div style={{
+                fontFamily: "var(--font-bodoni-moda,'Georgia',serif)",
+                fontStyle: "italic", fontWeight: 300,
+                fontSize: "clamp(1.6rem,5vw,2.8rem)",
+                color: "rgba(244,197,66,0.86)",
+                letterSpacing: "0.06em",
+                opacity: (endMsg >= 2 && endMsg < 4) ? 1 : 0,
+                transition: "opacity 2.5s ease",
+                marginBottom: "26px",
+              }}>
+                Happy Birthday, Kavya.
+              </div>
+              <div style={{
+                fontFamily: "var(--font-bodoni-moda,'Georgia',serif)",
+                fontStyle: "italic", fontWeight: 300,
+                fontSize: "clamp(0.82rem,1.8vw,1.05rem)",
+                color: "rgba(255,255,255,0.3)",
+                letterSpacing: "0.05em",
+                opacity: (endMsg >= 3 && endMsg < 4) ? 1 : 0,
+                transition: "opacity 2s ease",
+              }}>
+                Some memories never really leave us.
+              </div>
+            </>
+          ) : (
+            <div className="flex flex-col items-center justify-center animate-fade-in pointer-events-auto" style={{ animation: "s5In 1.5s ease forwards" }}>
+              <button
+                onClick={() => {
+                  musicManager.fadeOutAndStop(500);
+                  onReset?.();
+                }}
+                className="px-10 py-4.5 md:px-14 md:py-5.5 rounded-full border border-white/20 hover:border-white/40 bg-white/5 hover:bg-white/10 backdrop-blur-md text-white font-sans text-sm tracking-[0.25em] uppercase font-bold transition-all duration-300 shadow-[0_0_40px_rgba(255,255,255,0.05)] hover:shadow-[0_0_50px_rgba(255,255,255,0.12)] active:scale-95 cursor-pointer"
+              >
+                Rewatch Surprise ↺
+              </button>
+            </div>
+          )}
         </div>
       )}
 

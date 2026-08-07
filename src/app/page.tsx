@@ -8,10 +8,21 @@ import BackgroundParticles from "@/components/effects/BackgroundParticles";
 import CursorGlow from "@/components/effects/CursorGlow";
 import SceneFour from "@/components/SceneFour";
 import SceneFive from "@/components/SceneFive";
+import { musicManager } from "@/lib/audio";
 
 export default function Home() {
   const [scene, setScene] = useState(1);
+  const [showBack, setShowBack] = useState(true);
   const [particleMode, setParticleMode] = useState<"normal" | "dissolve" | "explode">("normal");
+
+  const handleBack = () => {
+    musicManager.fadeOutAndStop(500);
+    setScene(prev => {
+      const target = Math.max(1, prev - 1);
+      return target;
+    });
+    setShowBack(true);
+  };
 
   return (
     <main className="relative w-full h-full min-h-dvh bg-[#050505] overflow-hidden select-none">
@@ -28,6 +39,19 @@ export default function Home() {
 
       {/* 3. Custom Physics-based Cursor Tracking */}
       <CursorGlow />
+
+      {/* Floating Back Button */}
+      {scene > 1 && showBack && (
+        <button
+          onClick={handleBack}
+          className="fixed top-6 left-6 z-50 flex items-center justify-center h-[36px] px-[16px] py-[8px] rounded-full bg-black/30 backdrop-blur-md border border-white/20 hover:border-white/40 shadow-lg text-[10px] font-bold tracking-widest text-[rgba(255,255,255,0.7)] hover:text-white transition-all duration-300 active:scale-95 cursor-pointer uppercase select-none font-sans"
+          style={{
+            boxShadow: "0 4px 20px rgba(0,0,0,0.35)",
+          }}
+        >
+          ← Back
+        </button>
+      )}
 
       {/* 4. Scene Mount Controller */}
       <div className="relative w-full h-full min-h-dvh z-20">
@@ -58,7 +82,13 @@ export default function Home() {
         )}
 
         {scene === 5 && (
-          <SceneFive />
+          <SceneFive
+            onEndingStart={() => setShowBack(false)}
+            onReset={() => {
+              setScene(1);
+              setShowBack(true);
+            }}
+          />
         )}
       </div>
 
