@@ -1,4 +1,4 @@
-import { Howl, Howler } from "howler";
+import type { Howl } from "howler";
 
 let audioCtx: AudioContext | null = null;
 
@@ -16,9 +16,11 @@ function getAudioContext(): AudioContext | null {
 export function unlockAudioContext() {
   if (typeof window !== "undefined") {
     try {
-      if (Howler.ctx && Howler.ctx.state === "suspended") {
-        Howler.ctx.resume().catch(() => {});
-      }
+      import("howler").then(({ Howler }) => {
+        if (Howler && Howler.ctx && Howler.ctx.state === "suspended") {
+          Howler.ctx.resume().catch(() => {});
+        }
+      }).catch(() => {});
     } catch {}
   }
   const ctx = getAudioContext();
@@ -119,8 +121,9 @@ class SoundManager {
     }
   }
 
-  private initTracks() {
+  private async initTracks() {
     try {
+      const { Howl } = await import("howler");
       this.cdMusic = new Howl({
         src: [this.cdUrl, this.cdUrlAlt],
         html5: false,
