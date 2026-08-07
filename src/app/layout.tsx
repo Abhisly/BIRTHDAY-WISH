@@ -22,7 +22,7 @@ const caveat = Caveat({
 });
 
 export const metadata: Metadata = {
-  title: "A Cinematic Birthday Celebration",
+  title: "Kavya's secret",
   description: "A luxury digital birthday celebration designed with premium editorial typography, smooth motion aesthetics, and interactive storytelling.",
 };
 
