@@ -15,33 +15,36 @@ export default function Home() {
   const [particleMode, setParticleMode] = useState<"normal" | "dissolve" | "explode">("normal");
 
   useEffect(() => {
-    const handleHashChange = () => {
-      const hash = window.location.hash;
-      let targetScene = 1;
-      if (hash === "#scene2") targetScene = 2;
-      else if (hash === "#scene3") targetScene = 3;
-      else if (hash === "#scene4") targetScene = 4;
-      else if (hash === "#scene5") targetScene = 5;
+    const handlePopState = (event: PopStateEvent) => {
+      const state = event.state;
+      const targetScene = state?.scene || 1;
 
-      musicManager.fadeOutAndStop(500);
-      setScene(targetScene);
+      setScene((prevScene) => {
+        if (targetScene < prevScene) {
+          musicManager.fadeOutAndStop(500);
+        }
+        return targetScene;
+      });
     };
 
-    window.addEventListener("hashchange", handleHashChange);
+    window.addEventListener("popstate", handlePopState);
     
-    // Initialize hash if not present
-    if (!window.location.hash) {
-      window.history.replaceState(null, "", "#scene1");
-      setScene(1);
-    } else {
-      handleHashChange();
+    // Initialize history state if not present
+    if (!window.history.state || !window.history.state.scene) {
+      window.history.replaceState({ scene: 1 }, "");
     }
 
-    return () => window.removeEventListener("hashchange", handleHashChange);
+    return () => window.removeEventListener("popstate", handlePopState);
   }, []);
 
   const navigateToScene = (num: number) => {
-    window.location.hash = `scene${num}`;
+    window.history.pushState({ scene: num }, "");
+    setScene((prevScene) => {
+      if (num < prevScene) {
+        musicManager.fadeOutAndStop(500);
+      }
+      return num;
+    });
   };
 
   return (
