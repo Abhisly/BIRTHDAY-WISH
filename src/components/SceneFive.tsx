@@ -5,7 +5,6 @@ import gsap from "gsap";
 import { musicManager } from "@/lib/audio";
 
 interface SceneFiveProps {
-  onEndingStart?: () => void;
   onReset?: () => void;
 }
 
@@ -54,7 +53,7 @@ function Dust() {
 }
 
 /* ── Main ─────────────────────────────────────────────────────────────────── */
-export default function SceneFive({ onEndingStart, onReset }: SceneFiveProps) {
+export default function SceneFive({ onReset }: SceneFiveProps) {
   const [phase, setPhase] = useState<Phase>("envelope");
   const [endMsg, setEndMsg] = useState(0);
   const [visiblePara, setVisiblePara] = useState(0);
@@ -106,7 +105,6 @@ export default function SceneFive({ onEndingStart, onReset }: SceneFiveProps) {
 
   /* Close letter and begin ending sequence */
   const closeLetter = () => {
-    onEndingStart?.();
     if (letterRef.current) {
       gsap.to(letterRef.current, { opacity: 0, y: -20, duration: 1.5, ease: "power2.inOut",
         onComplete: () => {

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import SceneOne from "@/components/SceneOne";
 import SceneTwo from "@/components/SceneTwo";
 import SceneThree from "@/components/SceneThree";
@@ -12,16 +12,36 @@ import { musicManager } from "@/lib/audio";
 
 export default function Home() {
   const [scene, setScene] = useState(1);
-  const [showBack, setShowBack] = useState(true);
   const [particleMode, setParticleMode] = useState<"normal" | "dissolve" | "explode">("normal");
 
-  const handleBack = () => {
-    musicManager.fadeOutAndStop(500);
-    setScene(prev => {
-      const target = Math.max(1, prev - 1);
-      return target;
-    });
-    setShowBack(true);
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash;
+      let targetScene = 1;
+      if (hash === "#scene2") targetScene = 2;
+      else if (hash === "#scene3") targetScene = 3;
+      else if (hash === "#scene4") targetScene = 4;
+      else if (hash === "#scene5") targetScene = 5;
+
+      musicManager.fadeOutAndStop(500);
+      setScene(targetScene);
+    };
+
+    window.addEventListener("hashchange", handleHashChange);
+    
+    // Initialize hash if not present
+    if (!window.location.hash) {
+      window.history.replaceState(null, "", "#scene1");
+      setScene(1);
+    } else {
+      handleHashChange();
+    }
+
+    return () => window.removeEventListener("hashchange", handleHashChange);
+  }, []);
+
+  const navigateToScene = (num: number) => {
+    window.location.hash = `scene${num}`;
   };
 
   return (
@@ -40,26 +60,13 @@ export default function Home() {
       {/* 3. Custom Physics-based Cursor Tracking */}
       <CursorGlow />
 
-      {/* Floating Back Button */}
-      {scene > 1 && showBack && (
-        <button
-          onClick={handleBack}
-          className="fixed top-6 left-6 z-50 flex items-center justify-center h-[36px] px-[16px] py-[8px] rounded-full bg-black/30 backdrop-blur-md border border-white/20 hover:border-white/40 shadow-lg text-[10px] font-bold tracking-widest text-[rgba(255,255,255,0.7)] hover:text-white transition-all duration-300 active:scale-95 cursor-pointer uppercase select-none font-sans"
-          style={{
-            boxShadow: "0 4px 20px rgba(0,0,0,0.35)",
-          }}
-        >
-          ← Back
-        </button>
-      )}
-
       {/* 4. Scene Mount Controller */}
       <div className="relative w-full h-full min-h-dvh z-20">
         {scene === 1 && (
           <SceneOne
             setParticleMode={setParticleMode}
             onComplete={() => {
-              setScene(2);
+              navigateToScene(2);
             }}
           />
         )}
@@ -68,25 +75,23 @@ export default function Home() {
           <SceneTwo
             setParticleMode={setParticleMode}
             onComplete={() => {
-              setScene(3);
+              navigateToScene(3);
             }}
           />
         )}
 
         {scene === 3 && (
-          <SceneThree onComplete={() => setScene(4)} />
+          <SceneThree onComplete={() => navigateToScene(4)} />
         )}
 
         {scene === 4 && (
-          <SceneFour onComplete={() => setScene(5)} />
+          <SceneFour onComplete={() => navigateToScene(5)} />
         )}
 
         {scene === 5 && (
           <SceneFive
-            onEndingStart={() => setShowBack(false)}
             onReset={() => {
-              setScene(1);
-              setShowBack(true);
+              navigateToScene(1);
             }}
           />
         )}
